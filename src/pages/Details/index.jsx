@@ -1,5 +1,9 @@
 import { Container, Links, Content } from './styles';
 
+import { useState, useEffect } from 'react';
+
+import { useParams, useNavigate } from "react-router-dom";
+
 import { Header } from '../../components/Header';
 
 import { Section } from '../../components/Section';
@@ -10,42 +14,92 @@ import { Button } from '../../components/Button';
 
 import { Tag } from '../../components/Tag';
 
+import { api } from '../../services/api';
+
 export function Details() {
+    const [data, setData] = useState(null);
+
+    const params = useParams();
+    const navigate = useNavigate();
+
+    function handleBack() {
+        navigate(-1);
+    }
+
+    async function handleRemove() {
+        const confirm = window.confirm("Are you sure you want to delete this note?");
+
+        if (confirm) {
+            await api.delete(`notes/${params.id}`);
+            navigate(-1);
+        }
+
+    }
+
+    useEffect(() => {
+        async function fetchNote() {
+            const response = await api.get(`notes/${params.id}`);
+            setData(response.data);
+        }
+
+        fetchNote();
+    }, []);
 
     return (
         <Container>
             <Header />
+            {
+                data &&
+                <main>
+                    <Content>
+                        
+                    <ButtonText title="Excluir nota" onClick={ handleRemove }/>
 
-            <main>
-                <Content>
+                    <h1>
+                        {data.title}
+                    </h1>
+
+                    <p>
+                        {data.description}
+                    </p>
                     
-                <ButtonText title="Excluir nota" />
+                    {
+                        data.links && 
 
-                <h1>
-                    Introdução ao React
-                </h1>
+                        <Section title="Links úteis">
+                            <Links>
+                                {
+                                    data.links.map((link) => (
+                                    <li key={String(link.id)}>
+                                        <a href={link.url} target="_blank">
+                                            {link.url}
+                                        </a>
+                                    </li>
+                                    ))
+                                }
+                            </Links>
+                        </Section>
 
-                <p>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum repellendus repudiandae iure doloremque? Ea neque voluptatum suscipit adipisci earum quas hic eaque, facere culpa exercitationem, sit voluptatibus officia veritatis alias?
-                </p>
+                    }
+                    {
+                        data.tags &&
+                        <Section title="Marcadores">
+                            {
+                                data.tags.map((tag) => (
+                                    <Tag 
+                                    key={String(tag.id)} 
+                                    title={tag.name} />
+                                ))
+                            }
+                        </Section>
+                    }
 
-                <Section title="Links úteis">
-                    <Links>
-                        <li><a href="#">Item 01</a></li>
-                        <li><a href="#">Item 02</a></li>
-                        <li><a href="#">Item 03</a></li>
-                    </Links>
-                </Section>
+                    <Button title="Voltar" onClick={ handleBack }/>
+                        
+                    </Content>
+                </main>
 
-                <Section title="Marcadores">
-                    <Tag title="express" />
-                    <Tag title="nodejs" />
-                </Section>
-
-                <Button title="Voltar" />
-                    
-                </Content>
-            </main>
+            }
 
         </Container>
     )

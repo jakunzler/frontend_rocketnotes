@@ -12,7 +12,7 @@ export function NoteItem({ isNew, value, onClick, ...rest }) {
                 value={value}
                 readOnly={!isNew}
                 {...rest}
-                />
+            />
 
             <button
                 type="button"

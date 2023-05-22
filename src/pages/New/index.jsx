@@ -27,7 +27,7 @@ export function New() {
     const [links, setLinks] = useState([]);
     const [newLink, setNewLink] = useState('');
 
-    const [Tags, setTags] = useState([]);
+    const [tags, setTags] = useState([]);
     const [newTag, setNewTag] = useState('');
 
     const navigate = useNavigate();
@@ -67,11 +67,11 @@ export function New() {
             title,
             description,
             links,
-            Tags
+            tags
         });
 
         alert('New note added!');
-        navigate('/');
+        navigate(-1);
     }
 
     return (
@@ -118,7 +118,7 @@ export function New() {
                     <Section title="Marcadores">
                         <div className='tags'>
                             {
-                                Tags.map((tag, index) => (
+                                tags.map((tag, index) => (
                                     <NoteItem 
                                     key={String(index)}
                                     value={tag}
@@ -147,4 +147,4 @@ export function New() {
             </main>
         </Container>
     );
-}
+};
